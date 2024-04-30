@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  kafka-producer:
+    image: docker.io/paraspatil/kafka-producer
+    container_name: kafka-producer
+    environment:
+      - KAFKA_SERVER=kafka
+    networks:
+      - microservice
+networks:
+  microservice:
+    driver: bridge

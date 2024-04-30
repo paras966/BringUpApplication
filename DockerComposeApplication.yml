@@ -1,0 +1,68 @@
+version: '3.7'
+
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.9
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - microservice
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.4
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+    depends_on:
+      - zookeeper
+    networks:
+      - microservice
+
+
+  mysql:
+    image: docker.io/paraspatil/data-ingestion-mysql
+    container_name: mysql
+    environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=user
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - microservice
+
+  data-ingestion:
+    image: docker.io/paraspatil/data-ingestion
+    container_name: data-ingestion
+    ports:
+      - "8080:8080"
+    environment:
+      - MYSQL_HOST=mysql
+      - KAFKA_SERVER=kafka
+    depends_on:
+      - mysql
+      - kafka
+    networks:
+      - microservice
+
+  data-visualization:
+    image: docker.io/paraspatil/data-visualization
+    container_name: data-visualization
+    ports:
+      - "8081:8081"
+    environment:
+      - DATA_INGESTION=data-ingestion
+    depends_on:
+      - data-ingestion
+    command: >
+      bash -c "sleep 10"
+    networks:
+      - microservice
+
+
+networks:
+  microservice:
+    driver: bridge
