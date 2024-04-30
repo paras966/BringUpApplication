@@ -1,0 +1,15 @@
+---
+- name: Deploy  containers
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Start Kafka producer container
+      docker_container:
+        name: kafka-producer
+        image: docker.io/paraspatil/kafka-producer
+        state: started
+        detach: yes
+        env:
+          KAFKA_SERVER: "kafka"
+        networks:
+          - name: microservice
