@@ -57,8 +57,6 @@ services:
       - DATA_INGESTION=data-ingestion
     depends_on:
       - data-ingestion
-    command: >
-      bash -c "sleep 10"
     networks:
       - microservice
 
